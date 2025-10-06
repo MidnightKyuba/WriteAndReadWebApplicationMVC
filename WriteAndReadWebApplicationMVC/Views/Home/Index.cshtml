@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor Accessor
+@{
+    ViewData["Title"] = "Strona Główna";
+}
+
+@{
+    if(Accessor.HttpContext.Session.GetString("_Logged") == "True")
+    {
+        <div class="row vh-100">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 vh-100 align-content-center text-center" style="background-color: lightgreen;">
+                <a class="btn btn-success col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 col-xxl-3 mx-auto" asp-area="" asp-controller="Read" asp-action="Index">Czytaj</a>
+            </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6 vh-100 text-center align-content-center" style="background-color: lightblue;">
+                <a class="btn btn-primary col-6 col-sm-6 col-md-3 col-lg-3 col-xl-3 col-xxl-3 mx-auto" asp-area="" asp-controller="Write" asp-action="Index">Pisz</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h1 class="display-4">Witaj</h1>
+            <a class="btn btn-primary col-xxl-4 col-xl-4 col-lg-6 col-md-8 col-sm-10 col-10" asp-area="" asp-controller="Home" asp-action="Login">Zaloguj się</a>
+            <br />
+            <br />
+            <a class="btn btn-outline-primary col-xxl-4 col-xl-4 col-lg-6 col-md-8 col-sm-10 col-10" asp-area="" asp-controller="Home" asp-action="Register">Zarejestruj się</a>
+        </div>
+    }
+}

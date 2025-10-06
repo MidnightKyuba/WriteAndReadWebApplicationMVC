@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json;
+@inject IHttpContextAccessor Accessor
+@{
+	ViewData["Title"] = "Admin";
+	string usersListString = ViewData["usersList"].ToString();
+	List<User> users = JsonSerializer.Deserialize<List<User>>(usersListString);
+}
+@if (ViewData["Message"] != null)
+{
+	<h2 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 text-center">@ViewData["Message"]</h2>
+}
+<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
+	<h4 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 text-center">Zmiana uprawnień użytkownika</h4><br />
+	<form method="post" action="/Admin/ChangeUserLevel">
+		<label for="userId">Wybierz użytkownika:</label>
+		<select name="userId">
+			@{
+				foreach(User user in users)
+				{
+					<option value="@user.id">@user.login - @{if(user.admin){<>administrator</>}else{<>użytkownik</>}}</option>
+				}
+			}
+		</select><br />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" value="Zmień uprawnienia"/>
+	</form>
+</div>
+<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
+	<form method="post" action="/Admin/DeleteUser">
+		<label for="userId">Wybierz użytkownika:</label>
+		<select name="userId">
+			@{
+				foreach (User user in users)
+				{
+					<option value="@user.id">@user.login</option>
+				}
+			}
+		</select><br />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" />
+	</form>
+</div>
+<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
+	<form method="post" action="/Admin/CreateBlock">
+		<label for="userId">Wybierz użytkownika:</label>
+		<select name="userId">
+			@{
+				foreach (User user in users)
+				{
+					<option value="@user.id">@user.login</option>
+				}
+			}
+		</select><br />
+		<label for="endTime">Kiedy skończyć blokadę:</label>
+		<input type="datetime" name="endTime"/><br />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" />
+	</form>
+</div>
