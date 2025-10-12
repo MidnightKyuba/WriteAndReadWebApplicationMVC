@@ -18,41 +18,16 @@
 		</form>
 	</div>
 	<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
-		<form method="post" action="/Profile/ChangeEmail">
-			<label for="email" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Email:</label>
-			<input type="text" value="@user.email" name="email" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br /><br />
-			<input type="submit" class="btn btn-primary" class="col-8 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4" value="Zapisz zmiany" />
-		</form>
+		<p>Email: @user.email</p>
 	</div>
 	<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
-		<form method="post" action="/Profile/ChangePassword">
-			<label for="newPassword" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Nowe hasło:</label>
-			<input type="password" name="newPassword" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br />
-			<label for="newPassword2" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Powtórz nowe hasło:</label>
-			<input type="password" name="newPassword2" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br />
-			<label for="oldPassword" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Stare hasło:</label>
-			<input type="password" name="oldPassword" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br /><br />
-			<input type="submit" class="btn btn-primary" class="col-8 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4" value="Zapisz zmiany" />
-		</form>
+		<p>Kraj: @user.country<br />Miasto: @user.city<br />Ulica: @user.street<br />Kod pocztowy: @user.postcode</p>
 	</div>
 	<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
-		<form method="post" action="/Profile/ChangeAddress">
-			<label for="country" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Kraj:</label>
-			<input type="text" value="@user.country" name="country" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br />
-			<label for="city" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Miasto:</label>
-			<input type="text" value="@user.city" name="city" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br />
-			<label for="street" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Ulica:</label>
-			<input type="text" value="@user.street" name="street" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br />
-			<label for="postcode" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Kod pocztowy:</label>
-			<input type="number" min="10000" max="99999" value="@user.postcode" name="postcode" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br /><br />
-			<input type="submit" class="btn btn-primary" class="col-8 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4" value="Zapisz zmiany" />
-		</form>
+		<p>Data urodzenia: @user.birthDate.Year-@user.birthDate.Month.ToString().PadLeft(2, '0')-@user.birthDate.Day.ToString().PadLeft(2, '0')</p>
 	</div>
-	<div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
-		<form method="post" action="/Profile/ChangeBirthday">
-			<label for="birthday" class=" col-6 col-sm-6 col-md-2 col-lg-2 col-xl-2 col-xxl-2">Data urodzin:</label>
-			<input type="date" value="@user.birthDate" name="birthday" class=" col-10 col-sm-10 col-md-8 col-lg-8 col-xl-8 col-xxl-8" /><br /><br />
-			<input type="submit" class="btn btn-primary" class="col-8 col-sm-8 col-md-4 col-lg-4 col-xl-4 col-xxl-4" value="Zapisz zmiany" />
-		</form>
-	</div>
+	<a class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 btn btn-success" asp-controller="Profile" asp-action="Edit">Edytuj Dane</a>
+	<br />
+	<br />
+	<a class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 btn btn-success" asp-controller="Profile" asp-action="EditPassword">Edytuj Hasło</a>
 }

@@ -5,35 +5,83 @@ namespace WriteAndReadWebApplicationMVC.Services
 {
     public class BookService: IBookService
     {
-        private readonly IBookService _bookService;
-        public BookService(IBookService bookService) 
+        private readonly DbWriteAndReadContext _context;
+        public BookService(DbWriteAndReadContext context) 
         {
-            this._bookService = bookService;
+            this._context = context;
         }
 
         public int CreateBook(Book book)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Books.Add(book);
+                if (_context.SaveChanges() > 0)
+                {
+                    return book.id;
+                }
+                throw new Exception();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public int CreateChapter(Chapter chapter)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Chapters.Add(chapter);
+                if (_context.SaveChanges() > 0)
+                {
+                    return chapter.id;
+                }
+                throw new Exception();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public int CreateComment(Comment comment)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Comments.Add(comment);
+                if (_context.SaveChanges() > 0)
+                {
+                    return comment.id;
+                }
+                throw new Exception();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public int CreateReaded(Readed readed)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Readeds.Add(readed);
+                if (_context.SaveChanges() > 0)
+                {
+                    return readed.id;
+                }
+                throw new Exception();
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public List<Book> GetAllBooks()
         {
-            throw new NotImplementedException();
+            return _context.Books.ToList();
         }
 
         public List<Chapter> GetAllChaptersForBook(int id)
@@ -53,17 +101,17 @@ namespace WriteAndReadWebApplicationMVC.Services
 
         public Book GetBook(int id)
         {
-            throw new NotImplementedException();
+            return _context.Books.Single<Book>(b=>b.id == id);
         }
 
         public Chapter GetChapter(int id)
         {
-            throw new NotImplementedException();
+            return _context.Chapters.Single<Chapter>(ch => ch.id == id);
         }
 
         public bool IfReadedExist(int userId, int chapterId)
         {
-            throw new NotImplementedException();
+            return _context.Readeds.Any(r => r.userId == userId && r.chapterId == chapterId);
         }
 
         public int UpdateBook(Book book)

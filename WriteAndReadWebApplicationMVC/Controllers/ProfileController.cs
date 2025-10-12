@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WriteAndReadWebApplicationMVC.Models;
-using WriteAndReadWebApplicationMVC.Services;
 using WriteAndReadWebApplicationMVC.Services.Interfaces;
 using System.Text.Json;
 
@@ -28,12 +27,12 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else 
             {
-                return View();
+                return View("Index");
             }
         }
-
-        [HttpPost]
-        public IActionResult ChangeLogin() 
+        
+        [HttpGet]
+        public IActionResult Edit()
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -45,27 +44,43 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else
             {
+                return View();
+            }
+        }
+        [HttpPost]
+        public IActionResult EditUser() 
+        {
+            if (HttpContext.Session.GetString("_Logged") == null)
+            {
+                HttpContext.Session.SetString("_Logged", "False");
+            }
+            if (HttpContext.Session.GetString("_Logged") == "False")
+            {
+                return Redirect("/home/index");
+            }
+            else
+            {
+                User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                 string newlogin = HttpContext.Request.Form["login"];
-                if (!this._userService.CheckIfLoginExist(newlogin)) 
+                if (!this._userService.CheckIfLoginExist(newlogin))
                 {
-                    User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                     user.login = newlogin;
                     this._userService.ChangeUserData(user);
                     user = this._userService.GetUser(user.id);
-                    if(user.login == newlogin) 
+                    if (user.login == newlogin)
                     {
-                        HttpContext.Session.SetString("_CurrentUser",JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Login zmieniony";
+                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
+                        ViewData["Message"] = "Zmieniono dane";
                         return View("Index");
                     }
-                    else 
+                    else
                     {
                         HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                         ViewData["Message"] = "Nie udało się zmienić loginu";
                         return View("Index");
                     }
                 }
-                else 
+                else
                 {
                     ViewData["Message"] = "Login zajęty przez innego użytkownika";
                     return View("Index");

@@ -10,5 +10,6 @@ namespace WriteAndReadWebApplicationMVC.Services.Interfaces
         public User GetUser(string login);
         public User GetUser(int id);
         public void ChangeUserData(User user);
+        public List<Block> GetBlocksForUser(int userId);
     }
 }

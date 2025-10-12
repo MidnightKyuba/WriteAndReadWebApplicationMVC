@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using WriteAndReadWebApplicationMVC.Models;
 using WriteAndReadWebApplicationMVC.Services.Interfaces;
 
@@ -27,6 +28,11 @@ namespace WriteAndReadWebApplicationMVC.Services
         public bool CheckIfLoginExist(string login)
         {
             return _context.Users.Any(x => x.login == login);
+        }
+
+        public List<Block> GetBlocksForUser(int userId)
+        {
+             return _context.Blocks.Where(b => b.userId == userId).ToList();
         }
 
         public User GetUser(string login)

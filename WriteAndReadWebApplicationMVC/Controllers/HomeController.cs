@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Diagnostics;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using WriteAndReadWebApplicationMVC.Models;
@@ -27,7 +26,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             {
                 HttpContext.Session.SetString("_Logged", "False");
             }
-            return View();
+            return View("Index");
         }
 
         public IActionResult Privacy()
@@ -86,10 +85,22 @@ namespace WriteAndReadWebApplicationMVC.Controllers
         {
             try
             {
-                User user = _userService.GetUser(HttpContext.Request.Form["login"]);
+                string login = HttpContext.Request.Form["login"];
+                if (login == null || login.Length == 0) 
+                {
+                    ViewData["Message"] = "Pole login nie mo¿e byæ pustê";
+                    return View();
+                }
+                string password = HttpContext.Request.Form["Password"];
+                if (password == null || password.Length == 0)
+                {
+                    ViewData["Message"] = "Pole has³o nie mo¿e byæ pustê";
+                    return View();
+                }
+                User user = _userService.GetUser(login);
                 if (user != null)
                 {
-                    if (user.password == Tools.GetHash(HttpContext.Request.Form["password"]))
+                    if (user.password == Tools.GetHash(password))
                     {
                         foreach(Block block in user.blocks) 
                         {
@@ -134,6 +145,41 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             string city = HttpContext.Request.Form["city"];
             try
             {
+                if (login == null || login.Length == 0)
+                {
+                    ViewData["Message"] = "Pole login nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (email == null || email.Length == 0)
+                {
+                    ViewData["Message"] = "Pole email nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (password == null || password.Length == 0)
+                {
+                    ViewData["Message"] = "Pole has³o nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (password2 == null || password2.Length == 0)
+                {
+                    ViewData["Message"] = "Pole powtórz has³o nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (country == null || country.Length == 0)
+                {
+                    ViewData["Message"] = "Pole kraj nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (street == null || street.Length == 0)
+                {
+                    ViewData["Message"] = "Pole ulica nie mo¿e byæ pustê";
+                    return View();
+                }
+                if (city == null || city.Length == 0)
+                {
+                    ViewData["Message"] = "Pole miasto nie mo¿e byæ pustê";
+                    return View();
+                }
                 if (!this._userService.CheckIfLoginExist(login)) 
                 {
                     if (!this._userService.CheckIfEmailExist(email)) 
@@ -183,7 +229,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                             }
                             else 
                             {
-                                ViewData["Message"] = "Has³o musi miêæ przynajmniej osiem znaków";
+                                ViewData["Message"] = "Has³o musi miêæ przynajmniej osiem znaków (liter, cyfr lub znaków specjalnych)";
                                 return View();
                             }
                         }
