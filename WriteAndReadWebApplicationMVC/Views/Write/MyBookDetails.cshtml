@@ -1,0 +1,23 @@
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json;
+@inject IHttpContextAccessor Accessor
+@{
+	ViewData["Title"] = "Detale Książki";
+	string bookString = ViewData["Book"].ToString();
+	Book book = JsonSerializer.Deserialize<Book>(bookString);
+	<h1>Tytuł: @book.title</h1>
+	<h6>Data stworzenia: @book.createDate</h6>
+	<h6>Data aktualizacji: @book.updateDate</h6>
+	<p>@book.description</p>
+	<a class="btn btn-success col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12" asp-controller="write" asp-action="CreateBook" asp-route-bookId="@book.id">Edytuj książkę</a>
+	foreach (Chapter chapter in book.chapters)
+	{
+		<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">Tytuł:<a asp-controller="write" asp-action="CreateChapter" asp-route-chapterId="@chapter.id">@chapter.title</a></div>
+		<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Data utworzenia: @chapter.createTime</div>
+		<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Data zaktualizowania: @chapter.updateTime</div>
+		<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Licznik unikalnych czytelników: @chapter.uniqueReadCounter</div>
+		<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Licznik czytania: @chapter.readCounter</div>
+		<hr />
+	}
+	<a class="btn btn-success col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12" asp-controller="write" asp-action="CreateChapter" asp-route-bookId="@book.id">Stwórz rozdział</a>
+}

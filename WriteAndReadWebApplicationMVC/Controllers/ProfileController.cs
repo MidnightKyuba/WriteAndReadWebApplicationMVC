@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Metrics;
+using System.IO;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using WriteAndReadWebApplicationMVC.Models;
 using WriteAndReadWebApplicationMVC.Services.Interfaces;
-using System.Text.Json;
 
 namespace WriteAndReadWebApplicationMVC.Controllers
 {
@@ -15,7 +18,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? message = null)
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -27,12 +30,16 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else 
             {
-                return View("Index");
+                if(message != null) 
+                {
+                    ViewData["Message"] = message;
+                }
+                return View();
             }
         }
         
         [HttpGet]
-        public IActionResult Edit()
+        public IActionResult Edit(string? message = null)
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -44,11 +51,16 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else
             {
+                if (message != null)
+                {
+                    ViewData["Message"] = message;
+                }
                 return View();
             }
         }
+
         [HttpPost]
-        public IActionResult EditUser() 
+        public IActionResult Edit() 
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -61,35 +73,110 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             else
             {
                 User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
-                string newlogin = HttpContext.Request.Form["login"];
-                if (!this._userService.CheckIfLoginExist(newlogin))
+                string newLogin = HttpContext.Request.Form["login"];
+                string newEmail = HttpContext.Request.Form["email"];
+                string newCountry = HttpContext.Request.Form["country"];
+                string newStreet = HttpContext.Request.Form["street"];
+                string newCity = HttpContext.Request.Form["city"];
+                if(newLogin == null || newLogin.Length == 0) 
                 {
-                    user.login = newlogin;
-                    this._userService.ChangeUserData(user);
-                    user = this._userService.GetUser(user.id);
-                    if (user.login == newlogin)
+                    ViewData["Message"] = "Pole login nie może być pustę";
+                    return View();
+                }
+                if (newEmail == null || newEmail.Length == 0)
+                {
+                    ViewData["Message"] = "Pole email nie może być pustę";
+                    return View();
+                }
+                if (newCountry == null || newCountry.Length == 0)
+                {
+                    ViewData["Message"] = "Pole kraj nie może być pustę";
+                    return View();
+                }
+                if (newStreet == null || newStreet.Length == 0)
+                {
+                    ViewData["Message"] = "Pole ulica nie może być pustę";
+                    return View();
+                }
+                if (newCity == null || newCity.Length == 0)
+                {
+                    ViewData["Message"] = "Pole miasto nie może być pustę";
+                    return View();
+                }
+                if (user.login != newLogin) 
+                {
+                    if (!this._userService.CheckIfLoginExist(newLogin))
                     {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Zmieniono dane";
-                        return View("Index");
+                        user.login = newLogin;
                     }
                     else
                     {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Nie udało się zmienić loginu";
-                        return View("Index");
+                        ViewData["Message"] = "Login zajęty przez innego użytkownika";
+                        return View();
+                    }
+                }
+                if (user.email != newEmail) 
+                {
+                    if (!this._userService.CheckIfEmailExist(newEmail))
+                    {
+                        user.email = newEmail;
+                    }
+                    else
+                    {
+                        ViewData["Message"] = "Adres email zajęty przez innego użytkownika";
+                        return View();
+                    }
+                }
+                user.country = newCountry;
+                user.city = newCity;
+                user.street = newStreet;
+                if (int.TryParse(HttpContext.Request.Form["postcode"], out int newPostcode))
+                {
+                    if (newPostcode < 100000 && newPostcode >= 10000)
+                    {
+                        user.postcode = newPostcode.ToString();
+                    }
+                    else
+                    {
+                        ViewData["Message"] = "Kod pocztowy powinien być liczbom pomiędzy 10000 lub 99999";
+                        return View();
                     }
                 }
                 else
                 {
-                    ViewData["Message"] = "Login zajęty przez innego użytkownika";
-                    return View("Index");
+                    ViewData["Message"] = "Kod pocztowy powinien być liczbom";
+                    return View();
                 }
+                if (DateTime.TryParse(HttpContext.Request.Form["birthday"], out DateTime newBirthday))
+                {
+                    user.birthDate = newBirthday;                
+                }
+                else
+                {
+                    ViewData["Message"] = "Data urodzenia musi być datą";
+                    return View();
+                }
+                this._userService.ChangeUserData(user);
+                user = this._userService.GetUser(user.id);
+                if (user.login == newLogin && user.email == newEmail 
+                    && user.country == newCountry && user.city == newCity 
+                    && user.street == newStreet && user.postcode == newPostcode.ToString() 
+                    && user.birthDate == newBirthday)
+                {
+                    HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
+                    return Redirect("/profile/index?message=Zmieniono dane");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
+                    ViewData["Message"] = "Nie udało się zmienić danych";
+                    return View();
+                }  
             }
         }
 
-        [HttpPost]
-        public IActionResult ChangeEmail()
+        [HttpGet]
+        public IActionResult EditPassword(string? message = null)
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -101,36 +188,16 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else
             {
-                string newemail = HttpContext.Request.Form["email"];
-                if (!this._userService.CheckIfEmailExist(newemail))
+                if (message != null)
                 {
-                    User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
-                    user.email = newemail;
-                    this._userService.ChangeUserData(user);
-                    user = this._userService.GetUser(user.id);
-                    if (user.email == newemail)
-                    {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Adres email zmieniony";
-                        return View("Index");
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Nie udało się zmienić adresu email";
-                        return View("Index");
-                    }
+                    ViewData["Message"] = message;
                 }
-                else
-                {
-                    ViewData["Message"] = "Adres email zajęty przez innego użytkownika";
-                    return View("Index");
-                }
+                return View();
             }
         }
 
         [HttpPost]
-        public IActionResult ChangePassword()
+        public IActionResult EditPassword()
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -147,7 +214,8 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 string oldPassword = HttpContext.Request.Form["oldPassword"];
                 if (newPassword == newPassword2)
                 {
-                    if(newPassword.Length > 7) 
+                    Regex regex = new Regex("^[a-zA-Z0-9!@#$%^&*]{8,}$");
+                    if (regex.IsMatch(newPassword)) 
                     {
                         User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                         if (user.password == Tools.GetHash(oldPassword)) 
@@ -159,125 +227,31 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                             {
                                 HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                                 ViewData["Message"] = "Hasło zmienione";
-                                return View("Index");
+                                return Redirect("/profile/index?message=Hasło zmienione");
                             }
                             else
                             {
                                 HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                                 ViewData["Message"] = "Nie udało się zmienić hasła";
-                                return View("Index");
+                                return View();
                             }
                         }
                         else 
                         {
                             ViewData["Message"] = "Stare hasło jest nieprawidłowe";
-                            return View("Index");
+                            return View();
                         }
                     }
                     else 
                     {
-                        ViewData["Message"] = "Nowe hasło musi być dłuższe niż siedem znaków";
-                        return View("Index");
+                        ViewData["Message"] = "Nowe hasło musi mięć przynajmniej osiem znaków (liter, cyfr lub znaków specjalnych !,@,#,$,%,^,&,*)";
+                        return View();
                     }
                 }
                 else
                 {
                     ViewData["Message"] = "Nowe hasło nie jest tako samo w obydwu polach";
-                    return View("Index");
-                }
-            }
-        }
-
-        [HttpPost]
-        public IActionResult ChangeAdrress()
-        {
-            if (HttpContext.Session.GetString("_Logged") == null)
-            {
-                HttpContext.Session.SetString("_Logged", "False");
-            }
-            if (HttpContext.Session.GetString("_Logged") == "False")
-            {
-                return Redirect("/home/index");
-            }
-            else
-            {
-                string newCountry = HttpContext.Request.Form["country"];
-                string newCity = HttpContext.Request.Form["city"];
-                string newStreet = HttpContext.Request.Form["street"];
-                if (int.TryParse(HttpContext.Request.Form["postcode"],out int newPostcode))
-                {
-                    if( newPostcode < 100000 && newPostcode >= 10000) 
-                    {
-                        User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
-                        user.country = newCountry;
-                        user.city = newCity;
-                        user.street = newStreet;
-                        user.postcode = newPostcode.ToString();
-                        this._userService.ChangeUserData(user);
-                        user = this._userService.GetUser(user.id);
-                        if (user.country == newCountry && user.city == newCity && user.street == newStreet && user.postcode == newPostcode.ToString())
-                        {
-                            HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                            ViewData["Message"] = "Adres zmieniony";
-                            return View("Index");
-                        }
-                        else
-                        {
-                            HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                            ViewData["Message"] = "Nie udało się zmienić adresu";
-                            return View("Index");
-                        }
-                    }
-                    else 
-                    {
-                        ViewData["Message"] = "Kod pocztowy powinien być liczbom pomiędzy 10000 lub 99999";
-                        return View("Index");
-                    }
-                }
-                else
-                {
-                    ViewData["Message"] = "Kod pocztowy powinien być 5 cyfrową liczbom";
-                    return View("Index");
-                }
-            }
-        }
-
-        [HttpPost]
-        public IActionResult ChangeBirthday()
-        {
-            if (HttpContext.Session.GetString("_Logged") == null)
-            {
-                HttpContext.Session.SetString("_Logged", "False");
-            }
-            if (HttpContext.Session.GetString("_Logged") == "False")
-            {
-                return Redirect("/home/index");
-            }
-            else
-            {
-                if (DateTime.TryParse(HttpContext.Request.Form["birthday"],out DateTime newBirthday))
-                {
-                    User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
-                    user.birthDate = newBirthday;
-                    this._userService.ChangeUserData(user);
-                    user = this._userService.GetUser(user.id);
-                    if (user.birthDate == newBirthday)
-                    {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Data urodzenia zmieniona";
-                        return View("Index");
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
-                        ViewData["Message"] = "Nie udało się zmienić daty urodzenia";
-                        return View("Index");
-                    }
-                }
-                else
-                {
-                    ViewData["Message"] = "Data urodzenia musi być datą";
-                    return View("Index");
+                    return View();
                 }
             }
         }

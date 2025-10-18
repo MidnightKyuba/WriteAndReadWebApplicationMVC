@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json;
+@inject IHttpContextAccessor Accessor
+@{
+	ViewData["Title"] = "Edycja Książki";
+	if (ViewData["Chapter"] != null)
+	{
+		string chapterString = ViewData["Chapter"].ToString();
+		Chapter chapter = JsonSerializer.Deserialize<Chapter>(chapterString);
+		<div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 col-xxl-10">
+			<form asp-controller="write" asp-action="EditChapter" asp-route-chapterId="@chapter.id" method="post">
+				<lable>Tytuł: </lable>
+				<input name="title" required type="text" value="@chapter.title" /><br />
+				<label>Miejsce w książce:</label>
+				<input name="orderInBook" required type="number" value="@chapter.orderInBook"/><br />
+				<label>Rozdział: </label><br />
+				<textarea name="content" required>@chapter.content</textarea>
+				<input type="submit" class="btn btn-primary" value="Edytuj rozdział" />
+			</form>
+		</div>
+	}
+	else
+	{
+		<div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 col-xxl-10">
+			<form asp-controller="write" asp-action="CreateChapter" asp-route-bookId="@ViewData["BookId"]" method="post">
+				<lable>Tytuł: </lable>
+				<input name="title" required type="text" /><br />
+				<label>Miejsce w książce:</label>
+				<input name="orderInBook" required type="number" /><br />
+				<label>Rozdział: </label><br />
+				<textarea name="content" required></textarea>
+				<input type="submit" class="btn btn-primary" value="Stwórz rozdział" />
+			</form>
+		</div>
+	}
+}

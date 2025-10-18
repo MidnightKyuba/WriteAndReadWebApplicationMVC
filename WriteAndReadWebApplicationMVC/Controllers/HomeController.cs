@@ -3,6 +3,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using WriteAndReadWebApplicationMVC.Models;
 using WriteAndReadWebApplicationMVC.Services;
 using WriteAndReadWebApplicationMVC.Services.Interfaces;
@@ -55,7 +56,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else
             {
-                return this.Index();
+                return Redirect("/home/index");
             }
         }
 
@@ -76,7 +77,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
             else
             {
-                return this.Index();
+                return Redirect("/home/index");
             }
         }
 
@@ -112,7 +113,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                         }
                         HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                         HttpContext.Session.SetString("_Logged", "True");
-                        return this.Index();
+                        return Redirect("/home/index");
                     }
                     else 
                     {
@@ -186,7 +187,8 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                     {
                         if(password == password2) 
                         {
-                            if (password.Length > 7) 
+                            Regex regex = new Regex("^[a-zA-Z0-9!@#$%^&*]{8,}$");
+                            if (regex.IsMatch(password)) 
                             {
                                 if (int.TryParse(HttpContext.Request.Form["postcode"], out int postcode)) 
                                 {
@@ -201,7 +203,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                                                 User currentUser = this._userService.GetUser(newId);
                                                 HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(currentUser));
                                                 HttpContext.Session.SetString("_Logged", "True");
-                                                return this.Index();
+                                                return Redirect("/home/index");
                                             }
                                             else 
                                             {
@@ -229,7 +231,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                             }
                             else 
                             {
-                                ViewData["Message"] = "Has³o musi miêæ przynajmniej osiem znaków (liter, cyfr lub znaków specjalnych)";
+                                ViewData["Message"] = "Has³o musi miêæ przynajmniej osiem znaków (liter, cyfr lub znaków specjalnych !,@,#,$,%,^,&,*)";
                                 return View();
                             }
                         }
@@ -262,6 +264,14 @@ namespace WriteAndReadWebApplicationMVC.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        [Route("Logout")]
+        public IActionResult Logout() 
+        {
+            HttpContext.Session.Clear();
+            return Redirect("/home/Index");
         }
         
     }

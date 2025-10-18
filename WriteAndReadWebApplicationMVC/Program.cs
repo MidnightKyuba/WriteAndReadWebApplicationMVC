@@ -16,6 +16,7 @@ namespace WriteAndReadWebApplicationMVC
 
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IBookService, BookService>();
 
             builder.Services.AddDbContext<DbWriteAndReadContext>(builder1 =>
                 {

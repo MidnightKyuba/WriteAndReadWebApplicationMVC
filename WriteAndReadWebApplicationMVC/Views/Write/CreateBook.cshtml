@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json;
+@inject IHttpContextAccessor Accessor
+@{
+	ViewData["Title"] = "Edycja Książki";
+	if(ViewData["Book"] != null)
+	{
+		string bookString = ViewData["Book"].ToString();
+		Book book = JsonSerializer.Deserialize<Book>(bookString);
+		<div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 col-xxl-10">
+			<form asp-controller="write" asp-action="EditBook" asp-route-bookId="@book.id" method="post">
+				<lable>Tytuł: </lable>
+				<input name="title" required type="text" value="@book.title"/><br />
+				<label>Opis: </label><br />
+				<textarea name="description" required>@book.description</textarea><br />
+				<input type="submit" class="btn btn-primary" value="Edytuj książkę" />
+			</form>
+		</div>
+	}
+	else
+	{
+		<div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 col-xxl-10">
+			<form asp-controller="write" asp-action="CreateBook" method="post">
+				<lable>Tytuł: </lable>
+				<input name="title" required type="text"/><br />
+				<label>Opis: </label><br />
+				<textarea name="description" required></textarea><br />
+				<input type="submit" class="btn btn-primary" value="Stwórz książkę"/>
+			</form>
+		</div>
+	}
+}

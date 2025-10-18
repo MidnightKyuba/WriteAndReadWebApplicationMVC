@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Http
+@using System.Text.Json;
+@inject IHttpContextAccessor Accessor
+@{
+	string bookString = ViewData["Book"].ToString();
+	Book book = JsonSerializer.Deserialize<Book>(bookString);
+	ViewData["Title"] = book.title;
+	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">Tytuł: @book.title</div>
+	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">Author: @book.author.login</div>
+	<div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Data utworzenia: @book.createDate</div>
+	<div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Data aktualizacji: @book.updateDate</div>
+	<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">Opis:<br />@book.description</div>
+	<h3 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">Rozdziały</h3>
+	foreach (Chapter chapter in book.chapters)
+	{
+		<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12"><a asp-controller="read" asp-action="ReadChapter" asp-route-chapterId="@chapter.id">@chapter.title</a></div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Unikalni czytelnicy: @chapter.uniqueReadCounter</div>
+			<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6">Licznik czytania: @chapter.readCounter</div>
+		</div>
+	}
+}

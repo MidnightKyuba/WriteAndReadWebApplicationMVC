@@ -4,19 +4,20 @@ namespace WriteAndReadWebApplicationMVC.Services.Interfaces
 {
     public interface IBookService
     {
-        public List<Book> GetAllBooks();
-        public List<Book> GetAllMyBooks();
-        public Book GetBook(int id);
+        public List<Book> GetAllOtherBooks(int userId, int bookStartId);
+        public List<Book> GetAllMyBooks(int userId, int bookStartId);
+        public Book GetBook(int bookId);
         public int CreateBook(Book book);
-        public int UpdateBook(Book book);
-        public List<Chapter> GetAllChaptersForBook(int id);
-        public Chapter GetChapter(int id);
+        public void UpdateBook(Book book);
+        public List<Chapter> GetAllChaptersForBook(int bookId);
+        public Chapter GetChapter(int chapterId);
         public int CreateChapter(Chapter chapter);
-        public int UpdateChapter(Chapter chapter);
-        public List<Comment> GetAllCommentsForChapter(int id);
+        public void UpdateChapter(Chapter chapter);
+        public List<Comment> GetAllCommentsForChapter(int chapterId);
         public int CreateComment(Comment comment);
-        public int UpdateComment(Comment comment);
+        public void UpdateComment(Comment comment);
         public bool IfReadedExist(int userId, int chapterId);
         public int CreateReaded(Readed readed);
+        public Comment GetComment(int commentId);
     }
 }

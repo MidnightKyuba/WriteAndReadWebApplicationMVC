@@ -1,4 +1,5 @@
-﻿using WriteAndReadWebApplicationMVC.Models;
+﻿using System.Net;
+using WriteAndReadWebApplicationMVC.Models;
 using WriteAndReadWebApplicationMVC.Services.Interfaces;
 
 namespace WriteAndReadWebApplicationMVC.Services
@@ -79,34 +80,66 @@ namespace WriteAndReadWebApplicationMVC.Services
             }
         }
 
-        public List<Book> GetAllBooks()
+        public List<Chapter> GetAllChaptersForBook(int bookId)
         {
-            return _context.Books.ToList();
+            try
+            {
+                return _context.Chapters.Where(ch => ch.bookId == bookId).OrderBy(ch => ch.orderInBook).ToList();
+            }
+            catch (Exception e) {
+                return null;
+            }
         }
 
-        public List<Chapter> GetAllChaptersForBook(int id)
+        public List<Comment> GetAllCommentsForChapter(int chapterId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return _context.Comments.Where(c => c.chapterId == chapterId).OrderBy(c => c.writeDate).ToList();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        public List<Comment> GetAllCommentsForChapter(int id)
+        public List<Book> GetAllMyBooks(int userId, int bookStartId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return _context.Books.OrderBy(b => b.id).Where(b => b.authorId == userId).Skip(bookStartId-1).ToList();
+            }
+            catch (Exception e) 
+            {
+                return null;
+            }
         }
 
-        public List<Book> GetAllMyBooks()
+        public List<Book> GetAllOtherBooks(int userId, int bookStartId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return _context.Books.OrderBy(b => b.id).Where(b => b.authorId != userId).Skip(bookStartId - 1).ToList();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        public Book GetBook(int id)
+        public Book GetBook(int bookId)
         {
-            return _context.Books.Single<Book>(b=>b.id == id);
+            return _context.Books.Single<Book>(b=>b.id == bookId);
         }
 
-        public Chapter GetChapter(int id)
+        public Chapter GetChapter(int chapterId)
         {
-            return _context.Chapters.Single<Chapter>(ch => ch.id == id);
+            return _context.Chapters.Single<Chapter>(ch => ch.id == chapterId);
+        }
+
+        public Comment GetComment(int commentId)
+        {
+            return _context.Comments.Single<Comment>(c => c.id == commentId);
         }
 
         public bool IfReadedExist(int userId, int chapterId)
@@ -114,19 +147,22 @@ namespace WriteAndReadWebApplicationMVC.Services
             return _context.Readeds.Any(r => r.userId == userId && r.chapterId == chapterId);
         }
 
-        public int UpdateBook(Book book)
+        public void UpdateBook(Book book)
         {
-            throw new NotImplementedException();
+            this._context.Books.Update(book);
+            this._context.SaveChanges();
         }
 
-        public int UpdateChapter(Chapter chapter)
+        public void UpdateChapter(Chapter chapter)
         {
-            throw new NotImplementedException();
+            this._context.Chapters.Update(chapter);
+            this._context.SaveChanges();
         }
 
-        public int UpdateComment(Comment comment)
+        public void UpdateComment(Comment comment)
         {
-            throw new NotImplementedException();
+            this._context.Comments.Update(comment);
+            this._context.SaveChanges();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                     ViewData["Message"] = message;
                 }
                 ViewData["usersList"] = JsonSerializer.Serialize(users);
-                return Index();
+                return View("Index");
             }
             else 
             {
@@ -46,6 +46,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
         }
 
         [HttpPost]
+        [Route("ChangeUserLevel")]
         public IActionResult ChangeUserLevel() 
         {
             if (HttpContext.Session.GetString("_Logged") == null)
@@ -82,6 +83,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
         }
         [HttpPost]
+        [Route("DeleteUser")]
         public IActionResult DeleteUser()
         {
             if (HttpContext.Session.GetString("_Logged") == null)
@@ -118,6 +120,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
         }
         [HttpPost]
+        [Route("CreateBlock")]
         public IActionResult CreateBlock()
         {
             if (HttpContext.Session.GetString("_Logged") == null)
