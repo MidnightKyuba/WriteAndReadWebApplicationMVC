@@ -12,24 +12,34 @@
 }
 <div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
 	<h4 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 text-center">Zmiana uprawnień użytkownika</h4><br />
-	<form method="post" action="/Admin/ChangeUserLevel">
-		<label for="userId">Wybierz użytkownika:</label>
-		<select name="userId">
-			@{
-				foreach(User user in users)
+	@using (Html.BeginForm("ChangeUserLevel","Admin",FormMethod.Post))
+	{
+		<label for="userIdString">Wybierz użytkownika:</label>
+		<select name="userIdString">
+			@foreach (User user in users)
+			{
+				<option value="@user.id">@user.login - @{
+				if (user.admin)
 				{
-					<option value="@user.id">@user.login - @{if(user.admin){<>administrator</>}else{<>użytkownik</>}}</option>
+					<>administrator</>
 				}
+				else
+				{
+					<>użytkownik</>
+				}
+				}
+				</option>
 			}
-		</select><br />
-		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" value="Zmień uprawnienia"/>
-	</form>
+		</select>
+		<br />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" value="Zmień uprawnienia" />
+	}
 </div>
 <div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
 	<h4 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 text-center">Usuwanie użytkownika</h4><br />
 	<form method="post" action="/Admin/DeleteUser">
 		<label for="userId">Wybierz użytkownika:</label>
-		<select name="userId">
+		<select name="userIdString">
 			@{
 				foreach (User user in users)
 				{
@@ -37,14 +47,14 @@
 				}
 			}
 		</select><br />
-		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" value="Usuń użytkownika"/>
 	</form>
 </div>
 <div class="col-11 col-sm-11 col-md-9 col-lg-9 col-xl-9 col-xxl-9 border-1">
 	<h4 class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 text-center">Usuwanie użytkownika</h4><br />
 	<form method="post" action="/Admin/CreateBlock">
 		<label for="userId">Wybierz użytkownika:</label>
-		<select name="userId">
+		<select name="userIdString">
 			@{
 				foreach (User user in users)
 				{
@@ -53,7 +63,7 @@
 			}
 		</select><br />
 		<label for="endTime">Kiedy skończyć blokadę:</label>
-		<input type="datetime" name="endTime"/><br />
-		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" />
+		<input type="datetime-local" name="endTimeString"/><br />
+		<input type="submit" class="btn btn-primary col-10 col-sm-10 col-md-6 col-lg-6 col-xl-6 col-xxl-6" value="Stwórz blokadę"/>
 	</form>
 </div>

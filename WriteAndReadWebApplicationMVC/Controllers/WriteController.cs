@@ -29,6 +29,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 User currentUser = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                 List<Book> booksToView = this._bookService.GetAllMyBooks(currentUser.id, bookStartId);
                 ViewData["BooksList"] = JsonSerializer.Serialize(booksToView);
+                ViewData["bookStartId"] = bookStartId;
                 return View("Index");
             }
         }

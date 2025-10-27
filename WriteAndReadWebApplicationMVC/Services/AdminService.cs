@@ -13,20 +13,23 @@ namespace WriteAndReadWebApplicationMVC.Services
         public void ChangeUserLevel(int userId)
         {
             User user = this._context.Users.Single(x => x.id == userId);
-            if(user != null) 
+            if (user != null)
             {
-                if(user.admin == true) 
+                if (user.admin == true)
                 {
                     user.admin = false;
                 }
-                else 
+                else
                 {
                     user.admin = true;
                 }
                 this._context.Users.Update(user);
                 this._context.SaveChanges();
             }
-            throw new Exception("Użytkownik nie istnieje");
+            else
+            {
+                throw new Exception("Użytkownik nie istnieje");
+            }
         }
 
         public void CreateBlock(Block block)
@@ -43,7 +46,10 @@ namespace WriteAndReadWebApplicationMVC.Services
                 this._context.Users.Remove(user);
                 this._context.SaveChanges();
             }
-            throw new Exception("Użytkownik nie istnieje");
+            else
+            {
+                throw new Exception("Użytkownik nie istnieje");
+            }
         }
 
         public List<User> GetAllUsers()

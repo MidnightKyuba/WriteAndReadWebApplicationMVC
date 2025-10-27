@@ -113,6 +113,10 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                         }
                         HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                         HttpContext.Session.SetString("_Logged", "True");
+                        if(user.admin == true) 
+                        {
+                            HttpContext.Session.SetString("_IfAdmin", "True");
+                        }
                         return Redirect("/home/index");
                     }
                     else 

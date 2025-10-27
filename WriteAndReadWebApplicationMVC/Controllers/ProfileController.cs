@@ -223,7 +223,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                             user.password = Tools.GetHash(newPassword);
                             this._userService.ChangeUserData(user);
                             user = this._userService.GetUser(user.id);
-                            if (user.password == newPassword)
+                            if (user.password == Tools.GetHash(newPassword))
                             {
                                 HttpContext.Session.SetString("_CurrentUser", JsonSerializer.Serialize(user));
                                 ViewData["Message"] = "Hasło zmienione";

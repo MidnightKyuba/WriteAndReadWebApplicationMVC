@@ -46,8 +46,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
         }
 
         [HttpPost]
-        [Route("ChangeUserLevel")]
-        public IActionResult ChangeUserLevel() 
+        public IActionResult ChangeUserLevel(string userIdString) 
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -60,7 +59,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
             if (user.admin == true)
             {
-                if (int.TryParse(HttpContext.Request.Form["userId"], out int userId))
+                if (int.TryParse(userIdString, out int userId))
                 {
                     try 
                     {
@@ -83,8 +82,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
         }
         [HttpPost]
-        [Route("DeleteUser")]
-        public IActionResult DeleteUser()
+        public IActionResult DeleteUser(string userIdString)
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -97,7 +95,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
             if (user.admin == true)
             {
-                if (int.TryParse(HttpContext.Request.Form["userId"], out int userId))
+                if (int.TryParse(userIdString, out int userId))
                 {
                     try
                     {
@@ -120,8 +118,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             }
         }
         [HttpPost]
-        [Route("CreateBlock")]
-        public IActionResult CreateBlock()
+        public IActionResult CreateBlock(string userIdString, string endTimeString)
         {
             if (HttpContext.Session.GetString("_Logged") == null)
             {
@@ -134,9 +131,9 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
             if (user.admin == true)
             {
-                if (int.TryParse(HttpContext.Request.Form["userId"], out int userId))
+                if (int.TryParse(userIdString, out int userId))
                 {
-                    if (DateTime.TryParse(HttpContext.Request.Form["endTime"], out DateTime endTime))
+                    if (DateTime.TryParse(endTimeString, out DateTime endTime))
                     {
                         try
                         {
