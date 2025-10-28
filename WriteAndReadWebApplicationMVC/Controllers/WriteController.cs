@@ -151,7 +151,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                             book.description = description;
                             book.updateDate = DateTime.Now;
                             this._bookService.UpdateBook(book);
-                            return Redirect($"/write/MyBookDeatils?bookId={book.id}");
+                            return Redirect($"/write/MyBookDetails?bookId={book.id}");
                         }
                         else
                         {
@@ -300,6 +300,7 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 string title = HttpContext.Request.Form["title"];
                 string content = HttpContext.Request.Form["content"];
                 Chapter chapter = this._bookService.GetChapter(chapterId);
+                chapter.book = this._bookService.GetBook(chapter.bookId);
                 if (chapter.book.authorId == user.id)
                 {
                     if (int.TryParse(orderInBookString, out int orderInBook))
@@ -311,8 +312,9 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                                 chapter.orderInBook = orderInBook;
                                 chapter.title = title;
                                 chapter.content = content;
+                                chapter.updateTime = DateTime.Now;
                                 this._bookService.UpdateChapter(chapter);
-                                return Redirect($"/write/MyBookDeatails?bookId={chapter.bookId}");
+                                return Redirect($"/write/MyBookDetails?bookId={chapter.bookId}");
                             }
                             else
                             {
@@ -355,10 +357,12 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             {
                 User user = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                 Book book = this._bookService.GetBook(bookId);
-                if (book.author.id == user.id) 
+                List<Chapter> chapters = this._bookService.GetAllChaptersForBook(book.id);
+                if (book.authorId == user.id) 
                 {
                     ViewData["Book"] = JsonSerializer.Serialize(book);
-                    return View();
+                    ViewData["Chapters"] = JsonSerializer.Serialize(chapters);
+                    return View("MyBookDetails");
                 }
                 else 
                 {

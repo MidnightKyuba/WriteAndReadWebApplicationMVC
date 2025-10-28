@@ -22,11 +22,18 @@
 	}
 	foreach(Book book in books)
 	{
-		<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8">Tytuł:<a asp-controller="read" asp-action="ReadBook" asp-route-bookId="@book.id">@book.title</a></div>
+		<div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8">Tytuł:<a asp-controller="read" asp-action="BookRead" asp-route-bookId="@book.id">@book.title</a></div>
 		<div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 col-xxl-4">Author: @book.author.login</div>
 		<div class="col-6 col-sm-6 col-md-4 col-lg-4 col-xl-4 col-xxl-4">@book.createDate</div>
 		<div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 col-xxl-4">@book.updateDate</div>
-		<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">@book.description.Substring(0,50)</div>
+		if (book.description.Length <= 50)
+		{
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">@book.description</div>
+		}
+		else
+		{
+			<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12">@book.description.Substring(0, 50)</div>
+		}
 		bookCurrentId++;
 		if(bookCurrentId > bookStartId+10)
 		{

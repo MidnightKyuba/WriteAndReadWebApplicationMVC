@@ -3,12 +3,12 @@ logowanie - działa
 zmiana danych użytkownika - działa
 zmiana hasła użytkownika - działa
 zmiana uprawnień użytkownika - działa
-usuwanie użytkownika - nie testowane
-blokada użytkownika - nie testowane
-stworzenie książki - nie testowane
-edycja książki - nie testowane
-stworzenie rozdziału - nie testowane
-edycja rozdziału - nie testowane
-zliczanie unikalnego przeczytania - nie testowane
-zliczanie przeczytania - nie testowane
+usuwanie użytkownika - działa
+blokada użytkownika - działa
+stworzenie książki - działa
+edycja książki - działa
+stworzenie rozdziału - działa
+edycja rozdziału - działa
+zliczanie unikalnego przeczytania - działa
+zliczanie przeczytania - działa
 dodanie komentarza - nie testowane

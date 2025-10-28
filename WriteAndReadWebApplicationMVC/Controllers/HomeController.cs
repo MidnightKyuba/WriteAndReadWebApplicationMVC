@@ -103,7 +103,8 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 {
                     if (user.password == Tools.GetHash(password))
                     {
-                        foreach(Block block in user.blocks) 
+                        List<Block> userBlocks = this._userService.GetBlocksForUser(user.id);
+                        foreach(Block block in userBlocks) 
                         {
                             if(block.blockEnd <= DateTime.Now) 
                             {

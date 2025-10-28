@@ -12,10 +12,12 @@ namespace WriteAndReadWebApplicationMVC.Controllers
     public class ReadController : Controller
     {
         private readonly IBookService _bookService;
+        private readonly IUserService _userService;
 
-        public ReadController(IBookService bookService) 
+        public ReadController(IBookService bookService, IUserService userService) 
         {
             _bookService = bookService;
+            _userService = userService;
         }
 
         public IActionResult Index(int bookStartId = 1)
@@ -32,6 +34,10 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             {
                 User currentUser = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                 List<Book> booksToView = this._bookService.GetAllOtherBooks(currentUser.id, bookStartId);
+                foreach (Book book in booksToView)
+                {
+                    book.author = this._userService.GetUser(book.authorId);
+                }
                 ViewData["BooksList"] = JsonSerializer.Serialize(booksToView);
                 ViewData["bookStartId"] = bookStartId;
                 return View("Index");
@@ -56,6 +62,9 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 {
                     Redirect($"/write/MyBookDetails?bookId={book.id}");
                 }
+                book.author = this._userService.GetUser(book.authorId);
+                book.chapters = this._bookService.GetAllChaptersForBook(book.id);
+                ViewData["Chapters"] = JsonSerializer.Serialize(book.chapters);
                 ViewData["Book"] = JsonSerializer.Serialize(book);
                 return View();
             }
@@ -74,6 +83,9 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             else
             {
                 Chapter chapter = this._bookService.GetChapter(chapterId);
+                Book book = this._bookService.GetBook(chapter.bookId);
+                book.author = this._userService.GetUser(book.authorId);
+                chapter.book = book;
                 User currentUser = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
                 if (currentUser.id == chapter.book.authorId) 
                 {
@@ -88,6 +100,13 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 }
                 this._bookService.UpdateChapter(chapter);
                 chapter = this._bookService.GetChapter(chapter.id);
+                chapter.book = book;
+                List<Comment> comments = this._bookService.GetAllCommentsForChapter(chapter.id);
+                foreach (Comment comment in comments) 
+                {
+                    comment.user = this._userService.GetUser(comment.userId);
+                }
+                chapter.comments = comments;
                 ViewData["Chapter"] = JsonSerializer.Serialize(chapter);
                 return View();
             }
