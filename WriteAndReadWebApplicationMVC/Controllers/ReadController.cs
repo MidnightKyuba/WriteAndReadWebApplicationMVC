@@ -106,14 +106,14 @@ namespace WriteAndReadWebApplicationMVC.Controllers
                 {
                     comment.user = this._userService.GetUser(comment.userId);
                 }
-                chapter.comments = comments;
                 ViewData["Chapter"] = JsonSerializer.Serialize(chapter);
+                ViewData["Comments"] = JsonSerializer.Serialize(comments);
                 return View();
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateComment(int chapterId, string content) 
+        public ActionResult CreateComment(int chapterId, string content) 
         {
             User currentUser = JsonSerializer.Deserialize<User>(HttpContext.Session.GetString("_CurrentUser"));
             Comment comment = new Comment(chapterId,currentUser.id,content, DateTime.Now);
@@ -121,8 +121,8 @@ namespace WriteAndReadWebApplicationMVC.Controllers
             if(result > 0)
             {
                 comment = this._bookService.GetComment(result);
-                (string content, string login, DateTime writeDate) resultData = (comment.content,comment.user.login,comment.writeDate);
-                return Json(new { success = true, result = resultData});
+                User user = this._userService.GetUser(comment.userId);
+                return Json(new { success = true, content = comment.content, login = user.login, writeDate = comment.writeDate });
             }
             else 
             {

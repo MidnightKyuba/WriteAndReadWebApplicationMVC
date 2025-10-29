@@ -11,4 +11,4 @@ stworzenie rozdziału - działa
 edycja rozdziału - działa
 zliczanie unikalnego przeczytania - działa
 zliczanie przeczytania - działa
-dodanie komentarza - nie testowane
+dodanie komentarza - działa

@@ -5,6 +5,8 @@
 	string chapterString = ViewData["Chapter"].ToString();
 	Chapter chapter = JsonSerializer.Deserialize<Chapter>(chapterString);
 	ViewData["Title"] = chapter.title;
+	string commentsString = ViewData["Comments"].ToString();
+	List<Comment> comments = JsonSerializer.Deserialize<List<Comment>>(commentsString);
 	<div class="offset-1 col-10 offset-1 offset-sm-1 col-sm-10 offset-sm-1 offset-md-2 col-md-8 offset-md-2 offset-lg-2 col-lg-8 offset-lg-2 offset-xl-3 col-xl-6 offset-xl-3 offset-xxl-3 col-xxl-6 offset-xxl-3">
 		<h1 class="text-center">@chapter.title</h1>
 		<h2 class="text-center">@chapter.book.author.login</h2>
@@ -22,31 +24,34 @@
 			<textarea name="content" id="content">Wprowadź treść komentarza...</textarea><br />
 			<input type="submit" class="btn btn-primary" value="Dodaj komentarz"/>
 		</form>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 		<script>
 			var frm = $('#commentForm');
-			var data = { chapterId = $('#chapterId').val, content = $('#content').val };
 			frm.submit(function (ev) {
 				ev.preventDefault();
+				let data = { chapterId: $('#chapterId').val(), content: $('#content').val() };
 				$.ajax({
 					url: '/Read/CreateComment',
 					type: 'POST',
 					data: data,
-					success: UpdateComments(comment),
+					success: function(response) {
+						UpdateComments(response.content, response.login, response.writeDate);
+						alert("Komentarz dodano u dołu komentarzy");
+					},
 					error: function() 
 					{ 
-						alert("Nie udało się dodać komentarza! ") 
+						alert("Nie udało się dodać komentarza!") 
 					}
 				});
 			});
-			function UpdateComments(comment)
+			function UpdateComments(content, login, writeDate)
 			{
-				var commentObject = JSON.parse(comment);
-				var appendString = "<h4>"+commentObject.login+"</h4><h6>Data utworzenia: "+commentObject.writeDate+"</h6><p>"+commentObject.content+"</p><hr />";
+				var appendString = "<h4>"+login+"</h4><h6>Data utworzenia: "+writeDate+"</h6><p>"+content+"</p><hr />";
 				$("#comments").append(appendString);
 			}
 		</script>
 		<div id="comments">
-			@foreach (Comment comment in chapter.comments)
+			@foreach (Comment comment in comments)
 			{
 				<h4>@comment.user.login</h4>
 				<h6>Data utworzenia: @comment.writeDate</h6>
